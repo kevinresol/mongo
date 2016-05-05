@@ -1,0 +1,8 @@
+{
+  "name": "mongo",
+  "classPath": "src",
+  "dependencies": {
+      "tink_tcp": "",
+      "bson": ""
+  }
+}
