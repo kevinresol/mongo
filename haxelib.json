@@ -3,6 +3,7 @@
   "classPath": "src",
   "dependencies": {
       "tink_tcp": "",
+      "tink_macro": "",
       "bson": ""
   }
 }

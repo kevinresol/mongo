@@ -1,5 +1,7 @@
 package;
 
+import mongo.Mongo;
+
 class RunTests {
 	
 	static function main() {
@@ -10,8 +12,14 @@ class RunTests {
 		haxe.CallStack.wrapCallSite = s.wrapCallSite;
 		#end
 		
-		trace('test');
-		new mongo.Mongo();
+		Mongo.connect().handle(function(o) switch(o) {
+			case Success(mongo):
+				var db = mongo.db('test');
+				var collection = db.collection('users');
+				collection.find({filter:{username:'foo'}}).handle(function(o) trace(o));
+			case Failure(err):
+				trace(err);
+		});
 		
 	}
 }

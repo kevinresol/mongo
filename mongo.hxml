@@ -1,4 +1,6 @@
 -cp tests
 -main RunTests
--neko bin/test.n
+# -neko bin/test.n
+-js bin/test.js
+-lib hxnodejs
 -lib mongo
