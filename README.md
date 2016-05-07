@@ -8,18 +8,6 @@ There are [other](https://github.com/MattTuttle/mongo-haxe-driver) [Haxe drivers
 
 This driver utilizes [tink_tcp](https://github.com/haxetink/tink_tcp) which provides async TCP operations across all targets in a consistent manner. So this driver should work on any targets that is supported by tink_tcp.
 
-# Status
-
-This is pretty much work in progress in a sense that not all database commands are implemented as a function call (e.g. `db.dropDatabase()` or `collection.find({})`). But you can run most, if not all, commands through `db.runCommand(command)` by following the [official manual](https://docs.mongodb.com/manual/reference/command).
-
-In other words, `collection.find({filter:{a:1}})` is equivalent to:
-```haxe
-var cmd = new BsonDocument();
-cmd.add('find', 'collection_name');
-cmd.add('filter', {a:1});
-db.runCommand(cmd);
-```
-
 # Usage
 
 ```haxe
@@ -35,6 +23,17 @@ Mongo.connect().handle(function(o) switch(o) {
 
 More to come...
 
+# Status
+
+This is pretty much work in progress in a sense that although the protocol to communicate with the database server is complete, not all database commands are wrapped in a function call (e.g. `db.dropDatabase()` or `collection.find({})`). But you can run most, if not all, commands through `db.runCommand(command)` by following the [official manual](https://docs.mongodb.com/manual/reference/command).
+
+To illustrate, `collection.find({filter:{a:1}})` is equivalent to:
+```haxe
+var cmd = new BsonDocument();
+cmd.add('find', 'collection_name');
+cmd.add('filter', {a:1});
+db.runCommand(cmd);
+```
 
 # Note
 
