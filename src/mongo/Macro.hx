@@ -100,7 +100,7 @@ class Macro {
 					}
 					var reply = 'mongo.protocol.Message.Reply$cap'.asComplexType();
 					if(!reply.toType().isSuccess()) reply = macro:Dynamic;
-					var ret = macro:tink.CoreApi.Surprise<mongo.protocol.Message.ReplyMessageOf<$reply>, tink.CoreApi.Error>;
+					var ret = macro:tink.CoreApi.Surprise<Array<$reply>, tink.CoreApi.Error>;
 					
 					var cases = [for(key in map.keys()) {values: [macro $v{key}], expr: ${map[key]}, guard: null}];
 					

@@ -20,8 +20,9 @@ class Database implements Dynamic<Collection> {
 		this.name = name;
 	}
 	
-	public function runCommand(command:BsonDocument):Surprise<ReplyMessage, Error> {
-		return protocol.query(name + ".$cmd", command, null, 0, -1);
+	public function runCommand<T>(command:BsonDocument):Surprise<Array<T>, Error> {
+		return protocol.query(name + ".$cmd", command, null, 0, -1) >>
+			function(reply:ReplyMessageOf<T>) return reply.documents;
 	}
 	
 	public inline function collection(name:String) {
