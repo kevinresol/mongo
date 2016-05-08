@@ -26,4 +26,5 @@ class Collection {
 	
 	inline function get_protocol()
 		return db.protocol;
+
 }

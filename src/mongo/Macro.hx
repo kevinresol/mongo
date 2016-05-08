@@ -18,6 +18,9 @@ class Macro {
 				name: 'update'
 			},
 			{
+				name: 'delete'
+			},
+			{
 				name: 'findAndModify',
 			},
 			{
@@ -43,7 +46,6 @@ class Macro {
 			},
 			{
 				name: 'drop',
-				cmd:[{key: 'drop', expr: macro 1}],
 			},
 			{
 				name: 'count',

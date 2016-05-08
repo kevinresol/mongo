@@ -1,6 +1,8 @@
 -cp tests
 -main RunTests
 # -neko bin/test.n
+-debug
 -js bin/test.js
 -lib hxnodejs
 -lib mongo
+-lib buddy

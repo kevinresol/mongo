@@ -153,7 +153,6 @@ class Protocol {
 	
 	function addToQueue(id, bytes) {
 		queue.add({id:id, bytes:bytes});
-		trace('queued $id');
 		if(!piping) pipe();
 	}
 	
@@ -164,10 +163,8 @@ class Protocol {
 		}
 		piping = true;
 		var item = queue.pop();
-		trace('start writing ${item.id}');
 		(item.bytes:Source).pipeTo(connection.sink).handle(function(o) switch o {
 			case AllWritten:
-				trace('all written ${item.id}');
 				pipe();
 			case SinkFailed(e) | SourceFailed(e):
 				triggerId(item.id, Failure(e));
