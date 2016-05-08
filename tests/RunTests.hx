@@ -9,9 +9,11 @@ class RunTests implements Buddy<[
 ]>{
 	#if nodejs	
 	static function main() {
-		var s = js.Lib.require('source-map-support');
-		s.install();
-		haxe.CallStack.wrapCallSite = s.wrapCallSite;
+		if(Sys.getEnv('TRAVIS') != 'true') {
+			var s = js.Lib.require('source-map-support');
+			s.install();
+			haxe.CallStack.wrapCallSite = s.wrapCallSite;
+		}
 	}
 	#end
 }

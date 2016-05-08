@@ -11,22 +11,29 @@ haxe:
   - "3.2.1"
   - development
   
-services:
-  - mongodb
-  
 matrix:
   allow_failures:
     - haxe: development
     
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew update;
+      brew install mongodb;
+      sudo mkdir -p /data/db;
+      sudo mongod &
+    else
+      sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927;
+      echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list;
+      sudo apt-get update;
+      sudo apt-get install -y mongodb-org;
+    fi
+    
 install:
-  - haxelib git travix https://github.com/kevinresol/travix node_patch
-  - pushd "$(haxelib path travix | head -n 1)/../" &&
-      haxe build.hxml &&
-    popd
+  - haxelib install travix
   - haxelib run travix install
 
 script:
-  - haxelib run travix neko
-  - haxelib run travix java
-  - haxelib run travix cpp
+  # - haxelib run travix neko
+  # - haxelib run travix java
+  # - haxelib run travix cpp
   - haxelib run travix node

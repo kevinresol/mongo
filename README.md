@@ -1,4 +1,4 @@
-# mongo
+# mongo [![Build Status](https://travis-ci.org/kevinresol/mongo.svg?branch=master)](https://travis-ci.org/kevinresol/mongo)
 
 Pure Haxe MongoDB driver that is meant to be truly cross platform.
 

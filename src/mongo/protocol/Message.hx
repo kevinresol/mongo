@@ -67,8 +67,8 @@ typedef KillCursorsMessage = {
 
 /* Reply */
 
-typedef Cursor = {
-	firstBatch:Array<Dynamic>,
+typedef Cursor<T> = {
+	firstBatch:Array<T>,
 	id:Int64,
 	ns:String,
 }
@@ -83,7 +83,7 @@ typedef ReplyCount = {
 typedef ReplyFind = {
 	ok:Int, // 0 = failure, 1 = success
 	waitedMS:Int64,
-	cursor:Cursor,
+	cursor:Cursor<Dynamic>,
 }
 
 typedef ReplyInsert = {
@@ -157,7 +157,7 @@ typedef ReplyGetLastError = {
 
 typedef ReplyListCollections = {
 	ok:Int,
-	cursor:Cursor,
+	cursor:Cursor<{name:String, options:Dynamic}>,
 }
 
 typedef ReplyCreateIndexes = {
@@ -172,5 +172,5 @@ typedef ReplyCreateIndexes = {
 
 typedef ReplyListIndexes = {
 	ok:Int,
-	cursor:Cursor,
+	cursor:Cursor<Dynamic>,
 }
