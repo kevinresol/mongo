@@ -16,38 +16,30 @@ using StringTools;
 
 class Protocol {
 	
-	var connection:Connection;
+	var connections:ConnectionPool;
 	var requestId:Int = 0;
-	var triggers:Map<Int, FutureTrigger<Outcome<ReplyMessage, Error>>>;
-	var queue:List<{id:Int, bytes:Bytes}>;
-	var piping:Bool = false;
 	
 	public function new() {
 		
-		triggers = new Map();
-		queue = new List();
 		
 	}
 	
 	public function open(endpoint:Endpoint):Surprise<Noise, Error> {
 		
-		if(connection != null) throw 'Cannot connect twice';
-		
-		return Connection.tryEstablish(endpoint #if sys ,Worker.EAGER, Worker.EAGER #end) >>
+		if(connections != null) throw 'Cannot connect twice';
+		return Connection.tryEstablish(endpoint) >>
 			function(c:Connection) {
-				connection = c;
-				connection.source.parseStream(new ReplyMessageParser()).forEach(function(o) {
-					triggerId(o.responseTo, Success(o));
-					return true;
-				});
+				c.close();
+				connections = new ConnectionPool(endpoint);
 				return Noise;
 			}
+		
 	}
 	
 	public function close() {
-		if(connection != null) {
-			connection.close();
-			connection = null;
+		if(connections != null) {
+			connections.close();
+			connections = null;
 		}
 	}
 	
@@ -130,7 +122,7 @@ class Protocol {
 	
 	function request(opcode:Opcode, data:Bytes, responseTo:Int = 0):Surprise<ReplyMessage, Error> {
 		
-		if(connection == null) throw 'Not connected';
+		if(connections == null) throw 'Not connected';
 		
 		var out = new BytesOutput();
 		
@@ -143,41 +135,30 @@ class Protocol {
 		// body
 		out.write(data);
 		
-		var trigger = Future.trigger();
-		
-		var id = requestId - 1; // make sure it is a private copy
-		triggers[id] = trigger;
-		addToQueue(id, out.getBytes());
-		return trigger;
-	}
-	
-	function addToQueue(id, bytes) {
-		queue.add({id:id, bytes:bytes});
-		if(!piping) pipe();
-	}
-	
-	function pipe() {
-		if(queue.length == 0) {
-			piping = false;
-			return;
-		}
-		piping = true;
-		var item = queue.pop();
-		(item.bytes:Source).pipeTo(connection.sink).handle(function(o) switch o {
-			case AllWritten:
-				pipe();
-			case SinkFailed(e) | SourceFailed(e):
-				triggerId(item.id, Failure(e));
-			case SinkEnded:
-				triggerId(item.id, Failure(new Error('sink ended')));
+		return Future.async(function(cb) {
+			var cnx = connections.get();
+			function fail(err:Error) {
+				cnx.close();
+				return Failure(err);
+			}
+			
+			// TODO: pool the parsers?
+			cnx.source.parse(new ReplyMessageParser()).handle(function(o) switch o {
+				case Success(d): 
+					cb(Success(d.data)); 
+					connections.put(cnx);
+				case Failure(f): 
+					cb(fail(f));
+			});
+			
+			(out.getBytes():Source).pipeTo(cnx.sink).handle(function(o) switch o {
+				case SinkFailed(e) | SourceFailed(e):
+					cb(fail(e));
+				case SinkEnded:
+					cb(fail(new Error('sink ended')));
+				case AllWritten:
+			});
 		});
-	}
-	
-	function triggerId(id:Int, outcome:Outcome<ReplyMessage, Error>) {
-		var t = triggers[id];
-		if(t == null) return;
-		t.trigger(outcome);
-		triggers.remove(id);
 	}
 }
 
@@ -193,4 +174,37 @@ abstract Opcode(Int) to Int
 	var OP_GET_MORE      = 2005;
 	var OP_DELETE       = 2006;
 	var OP_KILL_CURSORS = 2007;
+}
+
+class ConnectionPool {
+	
+	var endpoint:Endpoint;
+	var connections:List<Connection>;
+	var closed = false;
+	
+	public function new(endpoint:Endpoint) {
+		this.endpoint = endpoint;
+		connections = new List();
+	}
+	
+	public function get():Connection {
+		trace('get');
+		if(closed) throw 'This connection pool has been closed';
+		if(connections.length == 0)
+			return Connection.establish(endpoint);
+		else
+			return connections.pop();
+	}
+	
+	public function put(cnx:Connection) {
+		if(closed)
+			cnx.close();
+		else
+			connections.add(cnx);
+	}
+	
+	public function close() {
+		closed = true;
+		for(c in connections) c.close();
+	}
 }
