@@ -11,18 +11,16 @@ using tink.CoreApi;
 class Database implements Dynamic<Collection> {
 	
 	public var name(default, null):String;
-	public var mongo(default, null):Mongo;
 	
-	var protocol(get, never):Protocol;
+	var protocol:Protocol;
 	
-	public function new(mongo:Mongo, name:String) {
-		this.mongo = mongo;
+	public function new(protocol:Protocol, name:String) {
+		this.protocol = protocol;
 		this.name = name;
 	}
 	
-	public function runCommand<T>(command:BsonDocument):Surprise<Array<T>, Error> {
-		return protocol.query(name + ".$cmd", command, null, 0, -1) >>
-			function(reply:ReplyMessageOf<T>) return reply.documents;
+	public inline function runCommand<T>(command:BsonDocument):Surprise<Array<T>, Error> {
+		return protocol.runCommand(name, command);
 	}
 	
 	public inline function collection(name:String) {
@@ -32,7 +30,4 @@ class Database implements Dynamic<Collection> {
 	public function resolve(name:String):Collection {
 		return new Collection(this, name);
 	}
-	
-	inline function get_protocol()
-		return mongo.protocol;
 }

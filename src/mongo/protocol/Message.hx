@@ -174,3 +174,34 @@ typedef ReplyListIndexes = {
 	ok:Int,
 	cursor:Cursor<Dynamic>,
 }
+
+/* Replication Commands */
+typedef ReplyIsMaster = {
+	// all instances
+	ok:Int,
+	ismaster:Bool,
+	maxBsonObjectSize:Int,
+	maxMessageSizeBytes:Int,
+	localTime:Date,
+	minWireVersion:Int,
+	maxWireVersion:Int,
+	
+	// sharded instances
+	msg:String,
+	
+	// replica sets
+	isreplicaset:Bool,
+	setName:String,
+	setVersion:Dynamic,
+	secondary:Bool,
+	hosts:Array<String>, // in the format 'host:port'
+	passives:Array<String>, // in the format 'host:port'
+	arbiters:Array<String>, // in the format 'host:port'
+	primary:String, // in the format 'host:port'
+	arbiterOnly:Bool,
+	passive:Bool,
+	hidden:Bool,
+	tags:Dynamic, // figure out the type
+	me:String, // in the format 'host:port'
+	electionId:Dynamic, // figure out the type
+}

@@ -67,6 +67,10 @@ class Macro {
 				name: 'listCollections',
 				cmd:[{key: 'listCollections', expr: macro 1}],
 			},
+			{
+				name: 'isMaster',
+				cmd:[{key: 'isMaster', expr: macro 1}],
+			},
 		];
 		return build(macro runCommand, commands);
 	}

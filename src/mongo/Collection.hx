@@ -15,16 +15,10 @@ class Collection {
 	public var name(default, null):String;
 	public var fullname(default, null):String;
 	
-	var protocol(get, never):Protocol;
-	
 	public function new(db:Database, name:String) {
 		this.db = db;
 		this.name = name;
 		fullname = db.name + '.$name';
 		
 	}
-	
-	inline function get_protocol()
-		return db.protocol;
-
 }
