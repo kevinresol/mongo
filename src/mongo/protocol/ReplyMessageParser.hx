@@ -20,6 +20,7 @@ class ReplyMessageParser implements StreamParser<ReplyMessage> {
 	
 	public function new() {
 		
+		result = None;
 		
 	}
 	
