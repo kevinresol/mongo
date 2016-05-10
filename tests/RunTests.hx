@@ -5,7 +5,7 @@ import mongo.Mongo;
 using tink.CoreApi;
 
 class RunTests implements Buddy<[
-	// TestProtocol,
+	TestProtocol,
 	TestConnectionString,
 ]>{
 	#if nodejs	
