@@ -1,6 +1,6 @@
 package mongo.protocol;
 
-import bson.Bson;
+import bson.*;
 import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
@@ -16,6 +16,7 @@ using StringTools;
 
 class Protocol {
 	
+	public var connected(get, never):Bool;
 	var connections:ConnectionPool;
 	var requestId:Int = 0;
 	
@@ -41,6 +42,11 @@ class Protocol {
 			connections.close();
 			connections = null;
 		}
+	}
+	
+	public function runCommand<T>(dbName:String, command:BsonDocument) {
+		return query(dbName + ".$cmd", command, null, 0, -1) >>
+			function(reply:ReplyMessageOf<T>) return reply.documents;
 	}
 	
 	public function update(collection:String, query:Dynamic, data:Dynamic, flags = 0) {
@@ -160,6 +166,8 @@ class Protocol {
 			});
 		});
 	}
+	
+	inline function get_connected() return connections != null;
 }
 
 @:enum

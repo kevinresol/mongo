@@ -9,7 +9,8 @@ using Lambda;
 class TestProtocol extends BuddySuite {
 	public function new() {
 		describe("Test Protocol", {
-			
+			mongo.topology.Monitor;
+			mongo.MongoClient;
 			var mongo = null;
 			var db = null;
 			var collection = null;
@@ -20,6 +21,16 @@ class TestProtocol extends BuddySuite {
 						mongo = s;
 						db = mongo.db('test');
 						collection = db.collection('users');
+						done();
+					case Failure(f):
+						fail(f);
+				});
+			});
+			
+			it("isMaster", function(done) {
+				db.isMaster().handle(function (o) switch o {
+					case Success(s):
+						untyped console.log(s);
 						done();
 					case Failure(f):
 						fail(f);

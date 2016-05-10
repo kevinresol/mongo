@@ -1,3 +1,6 @@
 -cp tests
 -main RunTests
 -lib buddy
+-debug
+
+--no-inline

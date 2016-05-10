@@ -25,6 +25,6 @@ class Mongo implements Dynamic<Database> {
 	}
 	
 	public function resolve(name:String) {
-		return new Database(this, name);
+		return new Database(protocol, name);
 	}
 }
