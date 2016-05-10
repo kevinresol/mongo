@@ -21,7 +21,7 @@ class TestConnectionString extends BuddySuite {
 	public function new() {
 		for(file in FileSystem.readDirectory(FOLDER)) {
 			if(file.extension() == 'json') {
-				describe(file, {
+				describe('Test Connection String - $file', {
 					for(t in getTests(file.withoutExtension())) {
 						if(t.description != 'Missing delimiting slash between hosts and options') // TODO: temp disabled failing test
 						it(t.description, {

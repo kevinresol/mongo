@@ -188,7 +188,6 @@ class ConnectionPool {
 	}
 	
 	public function get():Connection {
-		trace('get');
 		if(closed) throw 'This connection pool has been closed';
 		if(connections.length == 0)
 			return Connection.establish(endpoint);
